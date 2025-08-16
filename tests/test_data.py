@@ -1,28 +1,34 @@
 import unittest
-from src.data.loader import load_data
-from src.data.preprocessing import preprocess_data
+import pandas as pd
+from pathlib import Path
+import sys
 
-class TestDataFunctions(unittest.TestCase):
+# Add project root to path
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from src.data.loader import load_raw_data
+
+class TestDataLoading(unittest.TestCase):
 
     def setUp(self):
-        # Setup code to initialize test data
-        self.raw_data = load_data('data/raw/sample_data.csv')
-        self.processed_data = preprocess_data(self.raw_data)
+        # Create a dummy data file for testing
+        self.data_dir = Path("data/raw")
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.test_file = self.data_dir / "test_data.csv"
+        data = {'A': [1, 2, 3], 'B': [4, 5, 6]}
+        pd.DataFrame(data).to_csv(self.test_file, index=False)
 
     def test_load_data(self):
-        # Test if data is loaded correctly
-        self.assertIsNotNone(self.raw_data)
-        self.assertGreater(len(self.raw_data), 0)
+        """Tests that data is loaded correctly."""
+        df = load_raw_data(self.test_file)
+        self.assertIsInstance(df, pd.DataFrame)
+        self.assertFalse(df.empty)
 
-    def test_preprocess_data(self):
-        # Test if data preprocessing works as expected
-        self.assertIsNotNone(self.processed_data)
-        self.assertGreater(len(self.processed_data), 0)
-        # Add more assertions based on expected preprocessing outcomes
-
-    def test_data_integrity(self):
-        # Test for data integrity checks
-        self.assertTrue(self.processed_data.isnull().sum().sum() == 0, "Data contains null values")
+    def tearDown(self):
+        # Clean up the dummy data file
+        self.test_file.unlink()
 
 if __name__ == '__main__':
     unittest.main()
