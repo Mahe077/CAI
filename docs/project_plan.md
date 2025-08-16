@@ -18,14 +18,14 @@ This document is the canonical, updatable plan for the project. Use the checkbox
 ---
 
 ## Phase 0 — Project Setup & Reproducibility (Goal: reproducible baseline)
-- [ ] Initialize repository, add LICENSE, CODE_OF_CONDUCT, CONTRIBUTING.md
-- [ ] Define branch strategy (main/dev/feature/*)
-- [ ] Create environment files
-  - [ ] requirements.txt
-  - [ ] environment.yml
-- [ ] Add pre-commit hooks (black, isort, flake8)
-- [ ] Add CI pipeline skeleton (GitHub Actions: tests, lint)
-- [ ] Add reproducibility.md with exact commands and seed settings
+- [x] Initialize repository, add LICENSE, CODE_OF_CONDUCT, CONTRIBUTING.md
+- [x] Define branch strategy (main/dev/feature/*)
+- [x] Create environment files
+  - [x] requirements.txt
+  - [x] environment.yml
+- [x] Add pre-commit hooks (black, isort, flake8)
+- [x] Add CI pipeline skeleton (GitHub Actions: tests, lint)
+- [x] Add reproducibility.md with exact commands and seed settings
 
 Estimated time: 1–2 days
 

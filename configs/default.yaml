@@ -3,6 +3,7 @@
 project:
   name: "Crypto Trading AI Research"
   description: "This project aims to implement AI techniques for crypto trading, focusing on data analysis, feature engineering, model training, and backtesting strategies."
+  seed: 42
 
 data:
   raw_data_path: "data/raw"
