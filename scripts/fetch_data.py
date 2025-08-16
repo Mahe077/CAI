@@ -68,7 +68,7 @@ def main():
 
     raw_data_path = ROOT / config.get("data", {}).get("raw_data_path")
     coin = args.symbol.split('-')[0].lower()
-    file_path = Path(raw_data_path) / f"{args.source}_{coin}_data.csv"
+    file_path = Path(raw_data_path) / f"{args.source}_{coin}_data_{args.start}_{args.end}.csv"
 
     if args.source == "coingecko":
         start_timestamp = int(pd.to_datetime(args.start).timestamp()) if args.start else None
