@@ -5,13 +5,10 @@ import sys
 import argparse
 from pathlib import Path
 
-# ensure project src/ is importable so 'from utils...' works when running script directly
+# project root (used for paths) — do NOT modify sys.path here; install package editable instead
 ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / "src"
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
 
-from utils.config import load_config
+from src.utils.config import load_config
 
 def fetch_coingecko_data(api_url, api_key, params=None):
     """
