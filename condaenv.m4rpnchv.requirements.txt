@@ -1,6 +1,0 @@
-tensorflow-macos
-tensorflow-metal
-keras
-dash
-dash-bootstrap-components
-gunicorn

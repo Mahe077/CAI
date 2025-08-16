@@ -78,3 +78,12 @@ This project aims to implement AI techniques for crypto trading, focusing on dat
 - [ ] Final Review
 
 This plan can be updated as tasks are completed, and additional steps can be added as needed.
+
+#
+# To activate this environment, use
+#
+#     $ conda activate crypto-trading-ai
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
