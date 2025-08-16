@@ -8,7 +8,11 @@ This document is the canonical, updatable plan for the project. Use the checkbox
   - source .venv/bin/activate
   - pip install -r requirements.txt
 - Run tests: pytest -q
-- Run data fetch (example): python scripts/fetch_data.py --symbol BTC-USD --start 2020-01-01 --end 2024-12-31
+- Run data fetch (example): 
+  - For CoinGecko:
+      python scripts/fetch_data.py --source coingecko --symbol BTC-USD --start 2020-01-01 --end 2024-12-31
+  - For Binance (once you've implemented the fetching logic):
+      python scripts/fetch_data.py --source binance --symbol BTCUSDT --start 2020-01-01 --end 2024-12-31
 - Launch notebooks: jupyter lab
 
 ---
@@ -28,8 +32,8 @@ Estimated time: 1–2 days
 ---
 
 ## Phase 1 — Data Collection & Storage (Goal: reliable raw dataset)
-- [ ] Identify and list primary data sources (exchange APIs, CCXT, CoinGecko, Kaggle)
-- [ ] Implement scripts/fetch_data.py
+- [x] Identify and list primary data sources (exchange APIs, CCXT, CoinGecko, Kaggle)
+- [x] Implement scripts/fetch_data.py
   - [ ] CLI args: symbols, timeframe, start, end, out-path
   - [ ] Retry/backoff and rate-limit handling
   - [ ] Save raw CSV/Parquet to data/raw/{exchange}/{symbol}/{YYYY-MM-DD}.parquet

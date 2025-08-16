@@ -1,0 +1,9 @@
+# local env with secrets
+.env
+# optional: additional secret configs
+configs/*.secret.yaml
+# Ignore Python virtual environment
+venv/
+
+#data
+data/

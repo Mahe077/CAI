@@ -9,11 +9,14 @@ data:
   processed_data_path: "data/processed"
   external_data_path: "data/external"
 
-  data_source:
-    api_url: "https://api.coingecko.com/api/v3" # Example API
-    coin: "bitcoin"
-    currency: "usd"
-    days: 365
+  data_sources:
+    coingecko:
+      api_url: "https://api.coingecko.com/api/v3"
+      api_key: null     # set via env var COINGECKO_API_KEY or .env (do NOT commit secret)
+    binance:
+      api_url: "https://api.binance.com/api/v3"
+      api_key: null     # set via env var BINANCE_API_KEY
+      api_secret: null  # set via env var BINANCE_API_SECRET
 
 notebooks:
   exploration_notebook: "notebooks/01-data-exploration.ipynb"
@@ -43,7 +46,7 @@ documentation:
 
 status:
   objectives_defined: true
-  data_collected: false
+  data_collected: true
   data_explored: false
   data_preprocessed: false
   features_engineered: false
