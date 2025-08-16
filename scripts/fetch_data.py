@@ -1,6 +1,16 @@
 import requests
 import pandas as pd
 import os
+import sys
+from pathlib import Path
+
+# ensure project src/ is importable so 'from utils...' works when running script directly
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
+from utils.config import load_config
 
 def fetch_data(api_url, params=None):
     """
@@ -16,7 +26,10 @@ def fetch_data(api_url, params=None):
     response = requests.get(api_url, params=params)
     response.raise_for_status()  # Raise an error for bad responses
     data = response.json()
-    return pd.DataFrame(data)
+    # The coingecko API returns prices in a nested list
+    df = pd.DataFrame(data['prices'], columns=['timestamp', 'price'])
+    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+    return df
 
 def save_data(df, filename):
     """
@@ -26,26 +39,27 @@ def save_data(df, filename):
         df (pd.DataFrame): The DataFrame to save.
         filename (str): The filename for the saved CSV.
     """
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
     df.to_csv(filename, index=False)
     print(f"Data saved to {filename}")
 
 def main():
-    # Define API URL and parameters
-    api_url = "https://api.example.com/crypto-data"  # Replace with actual API URL
+    config = load_config()
+    data_source_config = config.get("data", {}).get("data_source", {})
+    
+    api_url = f"{data_source_config.get('api_url')}/coins/{data_source_config.get('coin')}/market_chart"
     params = {
-        'symbol': 'BTC',  # Example parameter
-        'interval': '1d',  # Example parameter
-        'limit': 100  # Example parameter
+        'vs_currency': data_source_config.get('currency'),
+        'days': data_source_config.get('days'),
     }
 
     # Fetch data
     data = fetch_data(api_url, params)
 
-    # Create directories if they don't exist
-    os.makedirs('data/raw', exist_ok=True)
-
     # Save raw data
-    save_data(data, 'data/raw/crypto_data.csv')
+    raw_data_path = config.get("data", {}).get("raw_data_path")
+    file_path = os.path.join(raw_data_path, f"{data_source_config.get('coin')}_data.csv")
+    save_data(data, file_path)
 
 if __name__ == "__main__":
     main()

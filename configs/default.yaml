@@ -9,6 +9,12 @@ data:
   processed_data_path: "data/processed"
   external_data_path: "data/external"
 
+  data_source:
+    api_url: "https://api.coingecko.com/api/v3" # Example API
+    coin: "bitcoin"
+    currency: "usd"
+    days: 365
+
 notebooks:
   exploration_notebook: "notebooks/01-data-exploration.ipynb"
   feature_engineering_notebook: "notebooks/02-feature-engineering.ipynb"
@@ -36,7 +42,7 @@ documentation:
   reproducibility_doc: "docs/reproducibility.md"
 
 status:
-  objectives_defined: false
+  objectives_defined: true
   data_collected: false
   data_explored: false
   data_preprocessed: false

@@ -1,85 +1,194 @@
-# Crypto Trading AI Research Project Plan
+# Crypto Trading AI — Detailed Phase Plan & Execution Checklist
 
-## Project Overview
-This project aims to implement AI techniques for crypto trading, focusing on data analysis, feature engineering, model training, and backtesting strategies.
+This document is the canonical, updatable plan for the project. Use the checkboxes to mark progress. Each line is an actionable step (smallest unit you can complete and check off). Add dates/notes after completion.
 
-## Steps to Follow
+## Quick start (Mac)
+- Create venv:
+  - python3 -m venv .venv
+  - source .venv/bin/activate
+  - pip install -r requirements.txt
+- Run tests: pytest -q
+- Run data fetch (example): python scripts/fetch_data.py --symbol BTC-USD --start 2020-01-01 --end 2024-12-31
+- Launch notebooks: jupyter lab
 
-### 1. Define Research Objectives
-- **Primary Objective:** Develop and evaluate a machine learning model that can predict short-term price movements of cryptocurrencies (e.g., Bitcoin, Ethereum) with a high degree of accuracy.
-- **Secondary Objective:** Create a profitable trading strategy based on the model's predictions and backtest it against historical data to assess its viability.
-- **Key Questions:**
-    - Can technical indicators (e.g., RSI, MACD, Bollinger Bands) be used as effective features for a predictive model?
-    - Which class of models (e.g., LSTMs, GRUs, Transformers, tree-based models) performs best for this prediction task?
-    - What is the optimal time horizon for prediction (e.g., 1 hour, 4 hours, 1 day)?
-    - Can the trading strategy consistently outperform a buy-and-hold strategy?
+---
 
-### 2. Data Collection
-- [ ] Identify data sources (e.g., exchanges, APIs).
-- [ ] Fetch data using `scripts/fetch_data.py`.
-- [ ] Store raw data in `data/raw`.
+## Phase 0 — Project Setup & Reproducibility (Goal: reproducible baseline)
+- [ ] Initialize repository, add LICENSE, CODE_OF_CONDUCT, CONTRIBUTING.md
+- [ ] Define branch strategy (main/dev/feature/*)
+- [ ] Create environment files
+  - [ ] requirements.txt
+  - [ ] environment.yml
+- [ ] Add pre-commit hooks (black, isort, flake8)
+- [ ] Add CI pipeline skeleton (GitHub Actions: tests, lint)
+- [ ] Add reproducibility.md with exact commands and seed settings
 
-### 3. Data Exploration
-- [ ] Open `notebooks/01-data-exploration.ipynb`.
-- [ ] Analyze and visualize the data.
-- [ ] Document findings in the notebook.
+Estimated time: 1–2 days
 
-### 4. Data Preprocessing
-- [ ] Implement data preprocessing in `src/data/preprocessing.py`.
-- [ ] Clean and transform data.
-- [ ] Store processed data in `data/processed`.
+---
 
-### 5. Feature Engineering
-- [ ] Open `notebooks/02-feature-engineering.ipynb`.
-- [ ] Create and select features.
-- [ ] Document feature selection process.
+## Phase 1 — Data Collection & Storage (Goal: reliable raw dataset)
+- [ ] Identify and list primary data sources (exchange APIs, CCXT, CoinGecko, Kaggle)
+- [ ] Implement scripts/fetch_data.py
+  - [ ] CLI args: symbols, timeframe, start, end, out-path
+  - [ ] Retry/backoff and rate-limit handling
+  - [ ] Save raw CSV/Parquet to data/raw/{exchange}/{symbol}/{YYYY-MM-DD}.parquet
+- [ ] Add metadata files (data/raw/_README.md, data/schema.json)
+- [ ] Add automated daily fetch cron/script (scripts/sync_data.sh)
+- [ ] Validate raw files (schema and checksum)
 
-### 6. Model Prototyping
-- [ ] Open `notebooks/03-model-prototyping.ipynb`.
-- [ ] Prototype different AI models in `src/models/model.py`.
-- [ ] Train models using `src/models/train.py`.
+Estimated time: 2–4 days
 
-### 7. Backtesting
-- [ ] Implement backtesting in `src/backtest/backtester.py`.
-- [ ] Evaluate trading strategies using historical data.
+---
 
-### 8. Experiment Tracking
-- [ ] Use `src/experiments/tracker.py` to log experiments.
-- [ ] Store results in `experiments/experiment_YYYY-MM-DD_id/results.csv`.
+## Phase 2 — EDA & Data Quality (Goal: understand data & quality issues)
+- [ ] Create notebook: notebooks/01-data-exploration.ipynb
+  - [ ] Load sample symbols
+  - [ ] Check missing data, duplicates, time alignment, timezone issues
+  - [ ] Visualize price, volume, volatility, gaps
+  - [ ] Save EDA notebook notes and plots to docs/eda/
+- [ ] Implement basic validators in src/data/validator.py
+  - [ ] ensure time continuity, no negative volumes, expected column types
+- [ ] Generate a one-page data quality report (docs/data_quality.md)
 
-### 9. Evaluation
-- [ ] Evaluate model performance using metrics in `src/utils/metrics.py`.
-- [ ] Document evaluation results in `docs/experiments.md`.
+Estimated time: 2–3 days
 
-### 10. API Development
-- [ ] Implement API for serving models in `src/api/serve.py`.
-- [ ] Test API functionality.
+---
 
-### 11. Documentation
-- [ ] Update `README.md` with project details.
-- [ ] Document reproducibility guidelines in `docs/reproducibility.md`.
+## Phase 3 — Preprocessing & Feature Engineering (Goal: stable feature pipeline)
+- [ ] Design processing contract: inputs, outputs, expected scalers, imputation strategy
+- [ ] Implement src/data/preprocessing.py
+  - [ ] timezone normalization, resampling (1m/5m/1h), forward-fill/backfill policies
+  - [ ] outlier handling (winsorize or clip)
+- [ ] Implement technical indicators in src/features/engineering.py
+  - [ ] basic: SMA, EMA, RSI, MACD, Bollinger Bands, ATR, OBV
+  - [ ] derived: returns, rolling-volatility, momentum, liquidity features
+- [ ] Create feature store layout: data/processed/features/{symbol}/{timeframe}.parquet
+- [ ] Notebook: notebooks/02-feature-engineering.ipynb — visualize feature distributions and correlation matrix
+- [ ] Add feature selection checklist: correlation threshold, importance-based pruning
 
-### 12. Testing
-- [ ] Write unit tests in `tests/test_data.py` and `tests/test_models.py`.
-- [ ] Run tests and ensure code quality.
+Estimated time: 4–7 days
 
-### 13. Final Review
-- [ ] Review all components of the project.
-- [ ] Prepare for presentation or publication.
+---
 
-## Status Update
-- [ ] Define Research Objectives
-- [ ] Data Collection
-- [ ] Data Exploration
-- [ ] Data Preprocessing
-- [ ] Feature Engineering
-- [ ] Model Prototyping
-- [ ] Backtesting
-- [ ] Experiment Tracking
-- [ ] Evaluation
-- [ ] API Development
-- [ ] Documentation
-- [ ] Testing
-- [ ] Final Review
+## Phase 4 — Modeling & Validation (Goal: baseline models + robust validation)
+- [ ] Define prediction task(s)
+  - [ ] classification: up/down in horizon H
+  - [ ] regression: future log-return
+  - [ ] multi-horizon experiments
+- [ ] Implement model interfaces in src/models/model.py
+  - [ ] sklearn-compatible wrapper for tree-based models
+  - [ ] PyTorch/TensorFlow/TorchForecasting wrappers for sequence models
+- [ ] Implement training script src/models/train.py
+  - [ ] config-driven (configs/*.yaml)
+  - [ ] deterministic seed, checkpointing, logging
+- [ ] Validation strategy
+  - [ ] Time-series cross-validation (expanding / rolling windows)
+  - [ ] Walk-forward evaluation
+- [ ] Baseline models to run
+  - [ ] Logistic regression, RandomForest, XGBoost
+  - [ ] LSTM / GRU baseline
+  - [ ] Transformer small prototype
+- [ ] Notebook: notebooks/03-model-prototyping.ipynb — reproducible runs & visualizations
+- [ ] Record hyperparameters & run metadata in experiments tracker
 
-This plan can be updated as tasks are completed, and additional steps can be added as needed.
+Estimated time: 1–2 weeks
+
+---
+
+## Phase 5 — Backtesting & Strategy Design (Goal: translate predictions to trades + realistic P&L)
+- [ ] Implement backtester: src/backtest/backtester.py
+  - [ ] support slippage, fees, position sizing, order types, leverage
+  - [ ] support event-driven simulation (signal -> order -> execution)
+- [ ] Define strategy rules (entry, exit, stop-loss, take-profit)
+- [ ] Evaluate risk metrics: Sharpe, Sortino, max drawdown, MAR ratio, CAGR
+- [ ] Run backtests vs buy-and-hold and benchmark (BTC, ETH)
+- [ ] Add walk-forward backtesting to avoid lookahead
+- [ ] Save backtest reports to experiments/experiment_YYYY-MM-DD_id/backtest_report.md
+
+Estimated time: 1–2 weeks
+
+---
+
+## Phase 6 — Experiment Tracking & Hyperparameter Tuning (Goal: reproducible experiments)
+- [ ] Implement lightweight tracker src/experiments/tracker.py (or integrate MLflow)
+  - [ ] log config, metrics, artifacts (models, plots)
+- [ ] Create experiments folder template and naming convention
+- [ ] Run hyperparameter sweeps (Optuna/Hyperopt)
+- [ ] Store best checkpoints in models/checkpoints/
+
+Estimated time: 3–7 days
+
+---
+
+## Phase 7 — Evaluation, Robustness & Risk Analysis (Goal: ensure real-world viability)
+- [ ] Evaluate on multiple time periods & unseen market regimes
+- [ ] Sensitivity analysis: feature ablation, parameter variation
+- [ ] Adversarial checks: simulate extreme events, regime shifts
+- [ ] Stress-test capital usage and margin calls
+- [ ] Document failure modes and risk controls (docs/risk.md)
+
+Estimated time: 1–2 weeks
+
+---
+
+## Phase 8 — Deployment & API (Goal: serve model for live/inference use)
+- [ ] Build minimal serve API: src/api/serve.py (FastAPI)
+  - [ ] endpoints: /health, /predict, /metrics
+  - [ ] authentication and rate limits
+- [ ] Add dockerfile and docker-compose for local deployment
+- [ ] Add monitoring endpoints and logs for inference latency and errors
+- [ ] Implement live data fetcher & scheduler (cron/k8s)
+
+Estimated time: 1 week
+
+---
+
+## Phase 9 — Tests, Documentation & Finalization (Goal: publishable codebase)
+- [ ] Unit tests for data, features, models (tests/)
+- [ ] Integration tests for training -> backtest -> report
+- [ ] Update README with instructions, architecture diagram
+- [ ] Prepare reproducibility binder / environment snapshot
+- [ ] Prepare presentation / paper draft with methodology and results
+
+Estimated time: 3–7 days
+
+---
+
+## Ongoing / Maintenance
+- [ ] Daily/weekly data sync
+- [ ] Retrain schedule and model drift monitoring
+- [ ] Add new features and check performance delta per experiment
+
+---
+
+## Status Board (copy this section into a lightweight kanban or keep here)
+- Use the checkboxes above. Example quick snapshot:
+  - Phase 0: [x] environment [ ] CI [ ] pre-commit
+  - Phase 1: [ ] raw fetch implemented
+  - Phase 2: [ ] EDA notebook created
+  - Phase 3: [ ] indicators implemented
+  - Phase 4: [ ] baselines trained
+  - Phase 5: [ ] backtester implemented
+
+---
+
+## Experiment Template (use for each experiment file saved under experiments/)
+- experiment_id: YYYYMMDD_{short-name}
+- owner:
+- date:
+- objective:
+- dataset:
+- config_file: configs/xxx.yaml
+- model:
+- metrics:
+- backtest_summary:
+- notes:
+
+---
+
+If you want, I can:
+- Update docs/project_plan.md file now with this content.
+- Create skeleton files (scripts/fetch_data.py, src/data/preprocessing.py, src/models/train.py) next.
+
+Which action should I take now? (reply: "update plan" or "scaffold files")
