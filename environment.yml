@@ -1,0 +1,26 @@
+environment:
+  name: crypto-trading-ai
+  channels:
+    - defaults
+  dependencies:
+    - python=3.8
+    - numpy
+    - pandas
+    - matplotlib
+    - seaborn
+    - scikit-learn
+    - tensorflow
+    - keras
+    - jupyter
+    - requests
+    - flask
+    - pytest
+    - pyyaml
+    - plotly
+    - statsmodels
+    - ta-lib
+    - ipykernel
+    - pip:
+        - dash
+        - dash-bootstrap-components
+        - gunicorn

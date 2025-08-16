@@ -1,0 +1,47 @@
+# Crypto Trading AI Experiment Configuration
+
+experiment_id: "experiment_YYYY-MM-DD_id"
+description: "This configuration file contains parameters for the crypto trading AI experiment."
+
+# Data Configuration
+data:
+  raw_data_path: "data/raw/"
+  processed_data_path: "data/processed/"
+  external_data_path: "data/external/"
+
+# Model Configuration
+model:
+  type: "LSTM"  # Options: LSTM, RandomForest, etc.
+  parameters:
+    learning_rate: 0.001
+    epochs: 100
+    batch_size: 32
+    dropout_rate: 0.2
+
+# Feature Engineering Configuration
+features:
+  selected_features:
+    - "feature_1"
+    - "feature_2"
+    - "feature_3"
+  feature_scaling: "StandardScaler"  # Options: StandardScaler, MinMaxScaler, etc.
+
+# Backtesting Configuration
+backtest:
+  start_date: "2022-01-01"
+  end_date: "2022-12-31"
+  initial_capital: 10000
+  commission: 0.001  # 0.1% commission
+
+# Logging Configuration
+logging:
+  log_level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR
+  log_file: "experiments/experiment_YYYY-MM-DD_id/logs.txt"
+
+# Results Configuration
+results:
+  output_path: "experiments/experiment_YYYY-MM-DD_id/results.csv"
+  metrics:
+    - "Sharpe Ratio"
+    - "Max Drawdown"
+    - "Total Return"
