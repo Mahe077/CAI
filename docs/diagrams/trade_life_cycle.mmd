@@ -1,0 +1,56 @@
+sequenceDiagram
+  participant D as Data Streams
+  participant F as Feature Store
+  participant M as Models + Fusion
+  participant RL as RL Policy
+  participant R as Risk Engine
+  participant P as Portfolio Manager
+  participant X as Execution Router
+  participant Ex as Exchanges
+  participant O as Observability
+
+  D->>F: Validated, time-aligned features (tick/on-chain/sentiment)
+  F->>M: Pull latest features (t-δ to t)
+  M->>RL: Signal vector + regime context + uncertainty
+  RL->>R: Proposed action (side, size, time-in-force)
+  R->>P: Risk-adjusted position size & constraints
+  P->>X: Target order(s) & hedges
+  X->>Ex: Smart-routed child orders (TWAP/POV/limit)
+  Ex-->>X: Fills/partial fills
+  X-->>P: Fill updates / slippage stats
+  P-->>O: P&L, risk, attribution
+  M-->>O: Model metrics, drift, confidence
+  RL-->>O: Policy reward tracking (paper vs. live)
+
+
+%% Component Notes (what each block does)
+
+    %% Ingest: Low-latency collectors stream tick/L2 data, on-chain events, and social/news; all normalized, validated, and time-aligned.
+
+    %% Storage:
+
+    %%    Data lake for raw; Delta/Parquet curated; Feature Store keeps point-in-time correct features for training vs. live.
+
+    %%    Model Registry tracks versions, artifacts, metrics, and promotion rules.
+
+    %% Modeling:
+
+    %%    Short-horizon GRU/LSTM for intraday; Transformer for swing; Gradient-boosted classifier for regimes.
+
+    %%    NLP transformer for multilingual sentiment + event tags.
+
+    %%    Multimodal Fusion combines signals with attention/stacking, feeding the RL Policy that outputs actions conditioned on regime.
+
+    %% Trading Core:
+
+    %%   Risk Engine enforces exposure, max loss, VAR, per-trade stop, and circuit breakers.
+
+    %%   Portfolio Manager handles allocations, hedges (e.g., perp hedges), and rebalancing.
+
+    %%   Arb/StatArb scans cross-exchange spreads and intra-sector pairs.
+
+    %%   Execution does child order slicing (TWAP/VWAP/POV), venue selection, slippage control.
+
+    %% Ops:
+
+    %%   Monitoring & drift detection; backtesting/paper trading for safe rollout; explainable rationales per trade; governance for approvals and a global kill-switch.

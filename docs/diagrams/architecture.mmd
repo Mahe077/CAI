@@ -1,0 +1,62 @@
+---
+config:
+  layout: elk
+---
+flowchart LR
+ subgraph External_Data["External_Data"]
+        Mkt["Market Data<br>OHLCV, L2 Orderbook"]
+        OnC["On-Chain Data<br>(whales, tx count, gas, flows)"]
+        Sent["Sentiment &amp; News<br>(Twitter/Reddit/News)"]
+        Macro["Macro/Calendars<br>(Fed, CPI, regs)"]
+  end
+ subgraph Ingest["Ingest"]
+        S1["Streaming Collectors"]
+        Q["Message Bus<br>(e.g., Kafka/PubSub)"]
+        V["Validation & Schema Enforcer"]
+  end
+ subgraph Storage["Storage"]
+        DL["Data Lake<br>(raw/bronze)"]
+        DS["Delta/Parquet<br>(clean/silver)"]
+        FS["Feature Store<br>(online/offline)"]
+        MR["Model Registry"]
+  end
+ subgraph Modeling["Modeling"]
+        RT1["Short-Horizon Models<br>GRU/LSTM (1–60m)"]
+        RT2["Medium-Horizon Models<br>Transformer (1–7d)"]
+        RC["Regime Classifier<br>(GBM/RF)"]
+        NLP["NLP/Transformer<br>Sentiment &amp; Event Signals"]
+        Fuse["Multimodal Fusion<br>(Attention/Stacking)"]
+        RL["RL Policy<br>(DDPG/PPO)"]
+  end
+ subgraph Trading_Core["Trading_Core"]
+        RS["Risk Engine<br>(Position Sizing, DD limits)"]
+        PM["Portfolio Manager<br>(allocations/hedges)"]
+        ARB["Arbitrage/StatArb Scanner"]
+        EXE["Execution Engine<br>(SMART Router)"]
+  end
+ subgraph Ops["Ops"]
+        Mon["Monitoring &amp; Drift<br>(Metrics, Alerts)"]
+        BT["Backtest/Sim & Paper Trade"]
+        Expl["Explainability<br>(Rationales, SHAP)"]
+        Gov["Governance<br>(approvals, audit, kill-switch)"]
+  end
+    External_Data --> S1
+    S1 --> Q
+    Q --> V
+    V --> DL
+    DL --> DS
+    DS --> FS & NLP & RT1 & RT2 & RC
+    NLP --> Fuse
+    RT1 --> Fuse
+    RT2 --> Fuse
+    RC --> RL
+    Fuse --> RL
+    RL --> RS & Mon
+    RS --> PM
+    PM --> EXE
+    ARB --> EXE
+    EXE --> Mon
+    FS --> RL
+    MR <--> RL & RT1 & RT2
+    BT <--> Trading_Core
+    Trading_Core --> Expl & Gov
