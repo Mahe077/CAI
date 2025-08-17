@@ -14,3 +14,5 @@ plotly
 pytest
 scipy
 statsmodels
+pandas_ta
+ccxt

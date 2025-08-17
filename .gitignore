@@ -7,3 +7,19 @@ venv/
 
 #data
 data/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Ignore large model files
+# *.h5
+# *.joblib
+
+# Ignore the csv. in models
+models/**/*.csv

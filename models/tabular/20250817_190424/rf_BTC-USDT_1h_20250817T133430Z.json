@@ -1,0 +1,74 @@
+{
+  "symbol": "BTC/USDT",
+  "timeframe": "1h",
+  "limit": 5000,
+  "horizon": 24,
+  "upper_barrier_pct": 0.02,
+  "lower_barrier_pct": 0.01,
+  "buy_threshold": 0.55,
+  "sell_threshold": 0.45,
+  "val_metrics": {
+    "split": "val",
+    "acc": 0.6606397774687065,
+    "prec": 0.010638297872340425,
+    "rec": 0.006578947368421052,
+    "f1": 0.008130081300813009,
+    "auc": 0.3776048918592778,
+    "cm": [
+      [
+        474,
+        93
+      ],
+      [
+        151,
+        1
+      ]
+    ]
+  },
+  "test_metrics": {
+    "split": "test",
+    "acc": 0.8595271210013908,
+    "prec": 0.0,
+    "rec": 0.0,
+    "f1": 0.0,
+    "auc": 0.4538834951456311,
+    "cm": [
+      [
+        618,
+        0
+      ],
+      [
+        101,
+        0
+      ]
+    ],
+    "pnl_estimate": 0.0
+  },
+  "final_cash_return_estimate": 0.0,
+  "created_utc": "20250817T133430Z",
+  "features": [
+    "close",
+    "volume",
+    "rsi_14",
+    "ema_12",
+    "ema_26",
+    "macd",
+    "macd_signal",
+    "macd_hist",
+    "boll_mid",
+    "boll_upper",
+    "boll_lower",
+    "bb_width",
+    "atr_14",
+    "volatility_pct",
+    "ret_1",
+    "ret_3",
+    "ret_12",
+    "vol_chg",
+    "ret_1_norm_by_atr",
+    "dist_from_ema_200",
+    "hour_of_day",
+    "day_of_week"
+  ],
+  "model": "RandomForestClassifier"
+}

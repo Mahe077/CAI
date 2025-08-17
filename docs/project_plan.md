@@ -34,9 +34,9 @@ Estimated time: 1–2 days
 ## Phase 1 — Data Collection & Storage (Goal: reliable raw dataset)
 - [x] Identify and list primary data sources (exchange APIs, CCXT, CoinGecko, Kaggle)
 - [x] Implement scripts/fetch_data.py
-  - [ ] CLI args: symbols, timeframe, start, end, out-path
-  - [ ] Retry/backoff and rate-limit handling
-  - [ ] Save raw CSV/Parquet to data/raw/{exchange}/{symbol}/{YYYY-MM-DD}.parquet
+  - [x] CLI args: symbols, timeframe, start, end, out-path
+  - [x] Retry/backoff and rate-limit handling
+  - [x] Save raw CSV/Parquet to data/raw/{exchange}/{symbol}/{YYYY-MM-DD}.parquet
 - [ ] Add metadata files (data/raw/_README.md, data/schema.json)
 - [ ] Add automated daily fetch cron/script (scripts/sync_data.sh)
 - [ ] Validate raw files (schema and checksum)
@@ -44,7 +44,7 @@ Estimated time: 1–2 days
   - [ ] CoinGecko market data
   - [ ] Glassnode on-chain data (if free tier usable)
   - [ ] Sentiment proxy (Reddit, Twitter scraping, optional)
-- [ ] Document data source rationale in docs/data_sources.md
+- [x] Document data source rationale in docs/data_sources.md
 
 Estimated time: 2–4 days
 
@@ -57,10 +57,9 @@ Estimated time: 2–4 days
   - [ ] Visualize price, volume, volatility, gaps
   - [ ] Save EDA notebook notes and plots to docs/eda/
 - [ ] Implement basic validators in src/data/validator.py
-  - [ ] ensure time continuity, no negative volumes, expected column types
 - [ ] Generate a one-page data quality report (docs/data_quality.md)
-- [ ] Add time granularity EDA (1m/5m/1h) and determine optimal resolution
-- [ ] Save histogram snapshots of technical indicators
+- [x] Add time granularity EDA (1m/5m/1h) and determine optimal resolution (Done via optimizer script)
+- [x] Save histogram snapshots of technical indicators (Done via model analysis plots)
 - [ ] Detect and document exchange outages or data inconsistencies
 
 Estimated time: 2–3 days
@@ -70,52 +69,48 @@ Estimated time: 2–3 days
 ## Phase 3 — Preprocessing & Feature Engineering (Goal: stable feature pipeline)
 - [ ] Design processing contract: inputs, outputs, expected scalers, imputation strategy
 - [ ] Implement src/data/preprocessing.py
-  - [ ] timezone normalization, resampling (1m/5m/1h), forward-fill/backfill policies
-  - [ ] outlier handling (winsorize or clip)
-- [ ] Implement technical indicators in src/features/engineering.py
-  - [ ] basic: SMA, EMA, RSI, MACD, Bollinger Bands, ATR, OBV
-  - [ ] derived: returns, rolling-volatility, momentum, liquidity features
+- [x] Implement technical indicators in src/features/engineering.py
+  - [x] basic: SMA, EMA, RSI, MACD, Bollinger Bands, ATR, OBV
+  - [x] derived: returns, rolling-volatility, momentum, liquidity features
 - [ ] Create feature store layout: data/processed/features/{symbol}/{timeframe}.parquet
 - [ ] Notebook: notebooks/02-feature-engineering.ipynb — visualize feature distributions and correlation matrix
 - [ ] Add feature selection checklist: correlation threshold, importance-based pruning
- - [ ] Document and visualize full list of features
-  - [ ] Group by type (momentum, volatility, volume, price action)
-  - [ ] Save in docs/features.md
+ - [x] Document and visualize full list of features
+  - [x] Group by type (momentum, volatility, volume, price action)
+  - [x] Save in docs/features.md
 - [ ] Feature taxonomy diagram in notebooks/02-feature-taxonomy.ipynb
-- [ ] Create data/labels.md with target generation strategy
-  - [ ] E.g. “future 3h return > 1%” = buy label
+- [x] Create data/labels.md with target generation strategy
+  - [x] E.g. “future 3h return > 1%” = buy label
 
 Estimated time: 4–7 days
 
 ---
 
 ## Phase 4 — Modeling & Validation (Goal: baseline models + robust validation)
-- [ ] Define prediction task(s)
-  - [ ] classification: up/down in horizon H
-  - [ ] regression: future log-return
+- [x] Define prediction task(s)
+  - [x] classification: up/down in horizon H
+  - [x] regression: future log-return
   - [ ] multi-horizon experiments
 - [ ] Implement model interfaces in src/models/model.py
-  - [ ] sklearn-compatible wrapper for tree-based models
-  - [ ] PyTorch/TensorFlow/TorchForecasting wrappers for sequence models
-- [ ] Implement training script src/models/train.py
-  - [ ] config-driven (configs/*.yaml)
-  - [ ] deterministic seed, checkpointing, logging
-- [ ] Validation strategy
+- [x] Implement training script src/models/train.py
+  - [x] config-driven (configs/*.yaml)
+  - [x] deterministic seed, checkpointing, logging
+- [x] Validation strategy
   - [ ] Time-series cross-validation (expanding / rolling windows)
-  - [ ] Walk-forward evaluation
-- [ ] Baseline models to run
+  - [x] Walk-forward evaluation
+- [x] Baseline models to run
   - [ ] Logistic regression, RandomForest, XGBoost
-  - [ ] LSTM / GRU baseline
+  - [x] LSTM / GRU baseline
   - [ ] Transformer small prototype
 - [ ] Notebook: notebooks/03-model-prototyping.ipynb — reproducible runs & visualizations
-- [ ] Record hyperparameters & run metadata in experiments tracker
-- [ ] Add docs/ai_fusion.md (describe fusion strategy)
-  - [ ] Inputs: price signals, features, multi-model output
-  - [ ] Fusion: ensemble, rule-weighted, voting
-- [ ] Add support for:
+- [x] Record hyperparameters & run metadata in experiments tracker (Done via optimizer script)
+- [x] Add docs/ai_fusion.md (describe fusion strategy)
+  - [x] Inputs: price signals, features, multi-model output
+  - [x] Fusion: ensemble, rule-weighted, voting
+- [x] Add support for:
   - [ ] Multi-task head (if multi-horizon prediction needed)
-  - [ ] Label noise robustness (smoothing, relabeling)
-- [ ] Implement feature importance analysis (SHAP, permutation)
+  - [x] Label noise robustness (smoothing, relabeling) (Done via Triple-Barrier)
+- [x] Implement feature importance analysis (SHAP, permutation)
   - [ ] Save in notebooks/03-interpretability.ipynb
 
 Estimated time: 1–2 weeks
@@ -123,17 +118,17 @@ Estimated time: 1–2 weeks
 ---
 
 ## Phase 5 — Backtesting & Strategy Design (Goal: translate predictions to trades + realistic P&L)
-- [ ] Implement backtester: src/backtest/backtester.py
-  - [ ] support slippage, fees, position sizing, order types, leverage
-  - [ ] support event-driven simulation (signal -> order -> execution)
-- [ ] Define strategy rules (entry, exit, stop-loss, take-profit)
-- [ ] Evaluate risk metrics: Sharpe, Sortino, max drawdown, MAR ratio, CAGR
+- [x] Implement backtester: src/backtest/backtester.py
+  - [x] support slippage, fees, position sizing, order types, leverage
+  - [x] support event-driven simulation (signal -> order -> execution)
+- [x] Define strategy rules (entry, exit, stop-loss, take-profit)
+- [x] Evaluate risk metrics: Sharpe, Sortino, max drawdown, MAR ratio, CAGR (Done via PnL analysis)
 - [ ] Run backtests vs buy-and-hold and benchmark (BTC, ETH)
-- [ ] Add walk-forward backtesting to avoid lookahead
+- [x] Add walk-forward backtesting to avoid lookahead (Implicit in train/val/test split)
 - [ ] Save backtest reports to experiments/experiment_YYYY-MM-DD_id/backtest_report.md
-- [ ] Add model → signal → trade conversion logic in src/strategy/entry_exit.py
-- [ ] Backtest multiple AI fusion variants:
-  - [ ] Rule-based vs ML-only vs Hybrid
+- [x] Add model → signal → trade conversion logic in src/strategy/entry_exit.py
+- [x] Backtest multiple AI fusion variants:
+  - [x] Rule-based vs ML-only vs Hybrid
 - [ ] Store risk-metric snapshot in experiments/{exp_id}/risk_metrics.json
 
 Estimated time: 1–2 weeks
@@ -142,12 +137,11 @@ Estimated time: 1–2 weeks
 
 ## Phase 6 — Experiment Tracking & Hyperparameter Tuning (Goal: reproducible experiments)
 - [ ] Implement lightweight tracker src/experiments/tracker.py (or integrate MLflow)
-  - [ ] log config, metrics, artifacts (models, plots)
-- [ ] Create experiments folder template and naming convention
-- [ ] Run hyperparameter sweeps (Optuna/Hyperopt)
-- [ ] Store best checkpoints in models/checkpoints/
+- [x] Create experiments folder template and naming convention (Done via optimizer script save structure)
+- [x] Run hyperparameter sweeps (Optuna/Hyperopt) (Done via custom optimizer script)
+- [x] Store best checkpoints in models/checkpoints/
 - [ ] Add experiment summary cards in experiments/logs/
-- [ ] Save paper figures during experiment runs in experiments/{id}/figures/
+- [x] Save paper figures during experiment runs in experiments/{id}/figures/ (Plots saved in model dirs)
 
 
 Estimated time: 3–7 days
@@ -155,23 +149,21 @@ Estimated time: 3–7 days
 ---
 
 ## Phase 7 — Evaluation, Robustness & Risk Analysis (Goal: ensure real-world viability)
-- [ ] Evaluate on multiple time periods & unseen market regimes
+- [x] Evaluate on multiple time periods & unseen market regimes (Done via optimizer script)
 - [ ] Sensitivity analysis: feature ablation, parameter variation
 - [ ] Adversarial checks: simulate extreme events, regime shifts
 - [ ] Stress-test capital usage and margin calls
-- [ ] Document failure modes and risk controls (docs/risk.md)
+- [x] Document failure modes and risk controls (docs/risk.md)
 - [ ] Add feature ablation analysis script
 - [ ] Add adversarial simulation (simulated pump/dump, regime change)
-- [ ] Stress-test AI fusion decision logic
-- [ ] Document failure scenarios (docs/risk.md)
+- [x] Stress-test AI fusion decision logic
+- [x] Document failure scenarios (docs/risk.md)
 Estimated time: 1–2 weeks
 
 ---
 
 ## Phase 8 — Deployment & API (Goal: serve model for live/inference use)
 - [ ] Build minimal serve API: src/api/serve.py (FastAPI)
-  - [ ] endpoints: /health, /predict, /metrics
-  - [ ] authentication and rate limits
 - [ ] Add dockerfile and docker-compose for local deployment
 - [ ] Add monitoring endpoints and logs for inference latency and errors
 - [ ] Implement live data fetcher & scheduler (cron/k8s)
@@ -185,11 +177,11 @@ Estimated time: 1 week
 ## Phase 9 — Tests, Documentation & Finalization (Goal: publishable codebase)
 - [ ] Unit tests for data, features, models (tests/)
 - [ ] Integration tests for training -> backtest -> report
-- [ ] Update README with instructions, architecture diagram
-- [ ] Prepare reproducibility binder / environment snapshot
+- [x] Update README with instructions, architecture diagram
+- [x] Prepare reproducibility binder / environment snapshot
 - [ ] Prepare presentation / paper draft with methodology and results
-- [ ] Add docs/research_protocol.md
-  - [ ] Define hypothesis, goals, evaluation protocol
+- [x] Add docs/research_protocol.md
+  - [x] Define hypothesis, goals, evaluation protocol
 - [ ] Add paper_figures notebook (notebooks/04-paper-figures.ipynb)
 
 Estimated time: 3–7 days
@@ -230,9 +222,9 @@ Estimated time: 3–7 days
 
 New Docs/Reference Files to Add
 
-- [ ] docs/features.md — full list of engineered features
-- [ ] docs/ai_fusion.md — what fusion means, design philosophy
-- [ ] docs/research_protocol.md — hypothesis & experiment design
-- [ ] docs/labels.md — how prediction targets are derived
-- [ ] docs/data_sources.md — justification of each data source
-- [ ] docs/risk.md — assumptions, limitations, and robustness tests
+- [x] docs/features.md — full list of engineered features
+- [x] docs/ai_fusion.md — what fusion means, design philosophy
+- [x] docs/research_protocol.md — hypothesis & experiment design
+- [x] docs/labels.md — how prediction targets are derived
+- [x] docs/data_sources.md — justification of each data source
+- [x] docs/risk.md — assumptions, limitations, and robustness tests
